@@ -1,0 +1,179 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Generator</title>
+    <style>
+        
+body{
+    display: flex;
+    justify-content: center;
+    font-size: 30px;
+    flex-direction: column;
+    margin-left: 150px;
+    overflow-y: scroll;
+}
+#forms-container{
+    border: 1px solid rgb(19, 18, 18);
+    border-radius: 5px;
+    width: 60%;
+    height: 500px;
+    background-color:rgb(239, 232, 232);
+    padding: 30px;
+    overflow-y: scroll;
+    
+}
+
+button{
+    font-size: 18px;
+    margin: 5px;
+    padding: 5px;
+    background-color: rgb(101, 100, 100);
+    color: aliceblue;
+    border-radius: 4px;
+}
+
+#btn-div{
+    margin-bottom: 4px;
+    padding: 2px;
+    display: flex;
+}
+
+input{
+    width: 400px;
+    padding: 10px 20px;
+    font-size: 20px;
+    margin-bottom: 10px;
+    display: block;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+
+</style>
+    
+</head>
+
+<body>
+    <div>
+        <h1>Automatic Question Set Generator</h1>
+    </div>
+    <hr>
+    <div id="btn-div">
+        <button type="button" onclick="createForm()">Create New Set</button>
+        <form>
+            <input id="ques_num" type="number" required style="width: 40px;">
+        </form>
+        <button type="button" onclick="generateSet()">Generate Random Set</button>
+
+    </div>
+    <div id="forms-container">
+        <form>
+
+            <button type="button" onclick="addfields(this)">Add Input Field</button>
+            <button type="button" onclick="saveForm(this)">Save</button>
+
+        </form>
+    </div>
+    <div id="saved-lists"></div>
+
+
+
+
+    <script>
+
+        let formcount = 1;
+        var savedLists = [];
+        const randomQuestions = [];
+
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function generateSet() {
+            var numQuestions = document.getElementById("ques_num").value;
+            const flattenedList = savedLists.flat();
+            const savedList = document.createElement("ol");
+
+            shuffleArray(flattenedList);
+            numQuestions = Math.min(numQuestions, flattenedList.length);
+
+
+            for (let i = 0; i < numQuestions; i++) {
+                randomQuestions.push(flattenedList.pop());
+            }
+            
+
+            randomQuestions.forEach((item) => {
+
+                const liElement = document.createElement("li");
+                liElement.textContent = item;
+                savedList.appendChild(liElement);
+            });
+            const savedListsContainer = document.getElementById("saved-lists");
+            savedListsContainer.innerHTML = "Generated Set"
+            savedListsContainer.appendChild(savedList);
+
+        }
+
+        function saveForm(button) {
+            const form = button.parentElement;
+            const inputs = form.querySelectorAll("input[type='text']");
+            const savedList = document.createElement("ul");
+            const savedInputs = [];
+
+            inputs.forEach(input => {
+                savedInputs.push(input.value);
+                input.disabled = true;
+            });
+
+            savedLists.push(savedInputs);
+
+            button.disabled = true;
+            button.style.backgroundColor = "aliceblue";
+            button.style.color = "rgb(101, 100, 100)";
+            
+        }
+        function addfields(button) {
+            const form = button.parentElement;
+            const input = document.createElement("input");
+            input.type = "text";
+            input.width = "500px"
+            form.appendChild(input);
+
+        }
+
+
+        function createForm() {
+            const formscontainer = document.getElementById("forms-container");
+            const newform = document.createElement("form");
+            const addbutton = document.createElement("button");
+            addbutton.textContent = "Add Input Field";
+            addbutton.type = "button";
+            addbutton.onclick = function () {
+                addfields(this);
+            };
+            const savebutton = document.createElement("button");
+            savebutton.textContent = "Save";
+            savebutton.type = "button";
+            savebutton.onclick = function () {
+                saveForm(this);
+            };
+            newform.appendChild(addbutton);
+            newform.appendChild(savebutton);
+            formscontainer.appendChild(newform);
+            formcount++;
+        }
+
+
+    </script>
+</body>
+
+</html>
